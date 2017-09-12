@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<style type="text/css">
+.bar {
+  fill: #C1ADC4;
+  stroke: black;
+  opacity: 0.4;
+  }
+.bar:hover {
+ 	fill: #927A94;
+ }
+</style>
+</head>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript">
+  var data = [1, 0.8, 0.7, 1.3, 1.1, 1.5, 0.9]; // Specify some data to visualize
+
+  var svg = d3.select('body').append('svg') // Select the page body and add an SVG element
+          .attr('height', 300) // Set its attributes
+          .attr('width', 300);
+
+  // Add frame
+  svg.append('rect')
+          .attr('width', 200)
+          .attr('height', 200)
+          .attr('x', 1) // Coordinates from top left corner of the SVG
+          .attr('y', 1)
+          .attr('stroke-width', 2) // Border width
+          .attr('stroke', '#ddd') // Border color
+          .attr('fill', 'white');
+
+
+  function draw(){
+    // Create selection
+    var selection = svg.selectAll('.bar') // Select elements by id tag (will be empty)
+            .data(data) // Connect the data to the selection
+
+    // Draw new bars
+    selection.enter() // Enter the selection in order to draw new elements using the data
+            .append('rect') // Define element type to insert (rectangle)
+            .attr('class', 'bar') // Set id tag to enable later selection
+            .attr('x', function(d,i){ // Set attribute by a function
+                return i*25+16; // based on index
+            })
+            .attr('y', function(d,i){
+                return 190-d*100; // based on data value
+            })
+            .attr('width', 20)
+            .attr('height', function(d,i){
+                return d*100;
+            });
+
+    // Update bars
+    selection.attr('y', function(d,i){
+                        return 190-d*100; // based on data value
+                    })
+            .attr('height', function(d,i){
+                return d*100;
+            });
+
+
+    // Remove bars
+    selection.exit().remove();
+
+   }
+
+
+   draw();
+   // data.pop();
+   // data.push(0.5);
+</script>
+</body>

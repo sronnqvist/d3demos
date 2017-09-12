@@ -1,2 +1,3 @@
 # d3demos
-D3.js demo examples
+d3.js demo examples -- introduction to visual analytics in practice
+

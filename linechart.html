@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!-- original from: https://bl.ocks.org/mbostock/3883245 -->
+<svg width="960" height="500"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+// Initialize svg and paramters
+var svg = d3.select("svg"),
+    margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height") - margin.top - margin.bottom,
+    // Create and position svg element group to draw in
+    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var parseTime = d3.timeParse("%d-%b-%y");
+
+// Set range of time scale (x axis), note: d3 v.4.0 syntax
+var x = d3.scaleTime()
+    .rangeRound([0, width]);
+
+// Set range of linear scale (y axis)
+var y = d3.scaleLinear()
+    .rangeRound([height, 0]);
+
+// Define line generator
+var line = d3.line()
+    .x(function(d) { // Link line x coordinates
+      return x(d.date); // to date and scale according to range of x scale
+    })
+    .y(function(d) { return y(d.close); });
+
+// Read data
+d3.tsv("linechart.tsv", function(d) { // Row conversion function
+  // Parse date format
+  d.date = parseTime(d.date);
+  // Cast as numerical
+  d.close = +d.close;
+  return d;
+}, function(error, data) { // Callback function
+  if (error) throw error;
+
+  // Set domains of data values for x and y dimensions
+  x.domain(d3.extent(data, function(d) { return d.date; }));
+  y.domain(d3.extent(data, function(d) { return d.close; }));
+
+  // Draw x axis
+  g.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x));
+/*    .select(".domain")
+      .remove();
+*/
+  // Draw y axis
+  g.append("g")
+      .call(d3.axisLeft(y))
+    .append("text") // With caption
+      .attr("fill", "#000")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "0.71em")
+      .attr("text-anchor", "end")
+      .text("Price ($)");
+
+  // Draw data
+  g.append("path")
+      .datum(data) // Connect data (note: using datum() instead of data().enter(), for non-dynamic drawing)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 1.5)
+      .attr("d", line); // Line generator provides line shape information
+});
+
+</script>
